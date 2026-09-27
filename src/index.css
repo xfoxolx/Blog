@@ -1,0 +1,347 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Fira+Code:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 0 0% 4%;
+  --surface: 0 0% 8%;
+  --text: 0 0% 96%;
+  --muted: 0 0% 53%;
+  --stroke: 0 0% 12%;
+  --accent: 0 0% 96%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: hsl(var(--bg));
+  color: hsl(var(--text));
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #4e85bf;
+  color: #fff;
+}
+
+/* 本地划线：Custom Highlight 上色，日夜同源 */
+::highlight(article-note) {
+  background: rgb(78 133 191 / 0.35);
+}
+
+/* Fira Code 连字：浏览器默认多为开启，这里显式锁死，防 reset 关掉 */
+.font-mono,
+.prose code,
+.prose pre code {
+  font-variant-ligatures: contextual;
+  font-feature-settings: 'calt' 1, 'liga' 1;
+}
+
+.accent-gradient {
+  background: linear-gradient(90deg, #89aacc 0%, #4e85bf 100%);
+}
+
+/* Liquid glass（Apple 式液态玻璃）：frost 磨砂 + SVG 边缘折射 + 顶部高光
+   手法参考 rdev/shuding 等开源实现：backdrop-filter 挂 url(#liquid-glass) 做折射；
+   写两遍 backdrop-filter，不认 url() 的浏览器（Firefox 等）自动回退到纯 frost 那行 */
+.liquid-glass {
+  background:
+    linear-gradient(to bottom, hsl(var(--text) / 0.09), transparent 38%),
+    hsl(var(--surface) / 0.55);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) url(#liquid-glass) saturate(160%) brightness(1.12);
+  border: 1px solid hsl(var(--text) / 0.12);
+  box-shadow:
+    inset 0 1px 1px hsl(var(--text) / 0.16),
+    inset 0 -1px 1px hsl(0 0% 0% / 0.1),
+    0 8px 32px hsl(0 0% 0% / 0.22);
+}
+
+.animate-scroll-down {
+  animation: scroll-down 1.5s ease-in-out infinite;
+}
+
+.animate-role-fade-in {
+  animation: role-fade-in 0.4s ease-out;
+}
+
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 6s ease infinite;
+}
+
+@keyframes scroll-down {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(200%);
+  }
+}
+
+@keyframes role-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Light theme — content pages opt in via .theme-light on their root. Home stays dark. */
+.theme-light {
+  --bg: 0 0% 98%;
+  --surface: 0 0% 100%;
+  --text: 0 0% 10%;
+  --muted: 0 0% 42%;
+  --stroke: 0 0% 88%;
+  --accent: 0 0% 10%;
+  color-scheme: light;
+}
+
+/* Markdown typography follows the same HSL vars, so day/night comes free */
+.prose {
+  --tw-prose-body: hsl(var(--text));
+  --tw-prose-headings: hsl(var(--text));
+  --tw-prose-lead: hsl(var(--muted));
+  --tw-prose-links: #4e85bf;
+  --tw-prose-bold: hsl(var(--text));
+  --tw-prose-counters: hsl(var(--muted));
+  --tw-prose-bullets: hsl(var(--muted));
+  --tw-prose-hr: hsl(var(--stroke));
+  --tw-prose-quotes: hsl(var(--text));
+  --tw-prose-quote-borders: hsl(var(--stroke));
+  --tw-prose-captions: hsl(var(--muted));
+  --tw-prose-code: hsl(var(--text));
+  --tw-prose-pre-code: hsl(var(--text));
+  --tw-prose-pre-bg: hsl(var(--surface));
+  --tw-prose-th-borders: hsl(var(--stroke));
+  --tw-prose-td-borders: hsl(var(--stroke));
+}
+.prose code::before,
+.prose code::after {
+  content: none;
+}
+.prose pre {
+  border: 1px solid hsl(var(--stroke));
+}
+.prose :where(h2, h3)[id],
+.prose sup a[id] {
+  scroll-margin-top: 6rem;
+}
+
+/* 锚点到达反馈：跳到哪、闪哪，眼睛跟得上 */
+@keyframes fn-flash {
+  0%,
+  100% {
+    background: transparent;
+  }
+  25%,
+  60% {
+    background: rgb(78 133 191 / 0.35);
+    border-radius: 4px;
+  }
+}
+.fn-flash {
+  animation: fn-flash 1.6s ease;
+}
+
+/* 表格：typography 默认太素——表头底色、宽松内边距、斑马纹、hover，圆角由外层容器负责 */
+.prose table {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.prose table thead {
+  background: hsl(var(--surface));
+}
+.prose table thead th {
+  padding: 0.8rem 1rem;
+  font-weight: 650;
+  white-space: nowrap;
+  color: hsl(var(--text));
+}
+.prose table tbody td {
+  padding: 0.8rem 1rem;
+}
+.prose table thead th:first-child,
+.prose table tbody td:first-child {
+  padding-left: 1.25rem;
+}
+.prose table thead th:last-child,
+.prose table tbody td:last-child {
+  padding-right: 1.25rem;
+}
+.prose table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.prose table tbody tr:nth-child(even) {
+  background: hsl(var(--text) / 0.03);
+}
+.prose table tbody tr:hover {
+  background: hsl(var(--text) / 0.06);
+}
+
+/* 代码高亮：rehype-highlight 只加类名，颜色跟本站变量走，日夜同源 */
+.prose pre code.hljs {
+  background: transparent;
+  padding: 0;
+}
+.hljs-comment,
+.hljs-quote {
+  color: hsl(var(--muted));
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-doctag {
+  color: #ff7b72;
+}
+.hljs-string,
+.hljs-regexp {
+  color: #a5d6ff;
+}
+.hljs-number,
+.hljs-literal {
+  color: #79c0ff;
+}
+.hljs-title,
+.hljs-title\.function_ {
+  color: #d2a8ff;
+}
+.hljs-title\.class_,
+.hljs-class .hljs-title,
+.hljs-type,
+.hljs-built_in {
+  color: #ffa657;
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-name {
+  color: #7ee787;
+}
+.hljs-meta,
+.hljs-operator,
+.hljs-punctuation {
+  color: hsl(var(--text));
+}
+.theme-light .hljs-keyword,
+.theme-light .hljs-selector-tag,
+.theme-light .hljs-doctag {
+  color: #cf222e;
+}
+.theme-light .hljs-string,
+.theme-light .hljs-regexp {
+  color: #0a3069;
+}
+.theme-light .hljs-number,
+.theme-light .hljs-literal,
+.theme-light .hljs-attr,
+.theme-light .hljs-attribute,
+.theme-light .hljs-variable {
+  color: #0550ae;
+}
+.theme-light .hljs-title,
+.theme-light .hljs-title\.function_ {
+  color: #8250df;
+}
+.theme-light .hljs-title\.class_,
+.theme-light .hljs-class .hljs-title,
+.theme-light .hljs-type,
+.theme-light .hljs-built_in {
+  color: #953800;
+}
+.theme-light .hljs-name {
+  color: #116329;
+}
+
+/* GitHub 风格提示块：颜色挂本站日夜开关，不跟 prefers-color-scheme */
+.markdown-alert {
+  border-left: 0.25em solid hsl(var(--stroke));
+  border-radius: 0 1rem 1rem 0;
+  background: hsl(var(--surface));
+  padding: 0.75rem 1rem;
+  margin: 1.25rem 0;
+}
+.markdown-alert > :last-child {
+  margin-bottom: 0 !important;
+}
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.markdown-alert .markdown-alert-title svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+.markdown-alert-note {
+  border-left-color: #4e85bf;
+}
+.markdown-alert-note .markdown-alert-title {
+  color: #89aacc;
+}
+.markdown-alert-tip {
+  border-left-color: #3fb950;
+}
+.markdown-alert-tip .markdown-alert-title {
+  color: #3fb950;
+}
+.markdown-alert-important {
+  border-left-color: #8957e5;
+}
+.markdown-alert-important .markdown-alert-title {
+  color: #a371f7;
+}
+.markdown-alert-warning {
+  border-left-color: #d29922;
+}
+.markdown-alert-warning .markdown-alert-title {
+  color: #d29922;
+}
+.markdown-alert-caution {
+  border-left-color: #f85149;
+}
+.markdown-alert-caution .markdown-alert-title {
+  color: #f85149;
+}
+.theme-light .markdown-alert-note .markdown-alert-title {
+  color: #0969da;
+}
+.theme-light .markdown-alert-tip .markdown-alert-title {
+  color: #1a7f37;
+}
+.theme-light .markdown-alert-important .markdown-alert-title {
+  color: #8250df;
+}
+.theme-light .markdown-alert-warning .markdown-alert-title {
+  color: #9a6700;
+}
+.theme-light .markdown-alert-caution .markdown-alert-title {
+  color: #d1242f;
+}
