@@ -30,7 +30,7 @@ jobs:
           REPO="${GITHUB_REPOSITORY#*/}"
           if [[ "$REPO" == *.github.io ]]; then BASE="/" else BASE="/$REPO/"; fi
           PAGES_BASE="$BASE" npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
