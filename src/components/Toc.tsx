@@ -34,8 +34,7 @@ export function useToc(target: RefObject<HTMLElement | null>, depKey: string) {
       cancelAnimationFrame(raf);
       obs.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [depKey]);
+  }, [depKey, target]);
 
   return { items, active };
 }

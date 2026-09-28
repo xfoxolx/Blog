@@ -5,7 +5,11 @@ import { load as yamlLoad } from 'js-yaml';
 function splitmatter(raw: string): { data: Record<string, unknown>; content: string } {
   const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
   if (!m) return { data: {}, content: raw };
-  return { data: (yamlLoad(m[1]) as Record<string, unknown>) ?? {}, content: m[2] };
+  try {
+    return { data: (yamlLoad(m[1]) as Record<string, unknown>) ?? {}, content: m[2] };
+  } catch {
+    return { data: {}, content: m[2] }; // frontmatter 写坏只丢元信息，不炸整站
+  }
 }
 
 export interface Post {
@@ -84,8 +88,9 @@ export const FOLDERS: Folder[] = (() => {
   for (const [p, raw] of Object.entries(files)) {
     const { rawDir } = parsePath(p);
     const key = rawDir ? rawDir.toLowerCase() : UNCATEGORIZED;
-    if (!groups.has(key)) groups.set(key, { rawDir, posts: [] });
-    groups.get(key)!.posts.push(toPost(p, raw));
+    const group = groups.get(key);
+    if (group) group.posts.push(toPost(p, raw));
+    else groups.set(key, { rawDir, posts: [toPost(p, raw)] });
   }
   const folders: Folder[] = [...groups.entries()].map(([key, g]) => ({
     key,

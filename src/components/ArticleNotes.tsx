@@ -13,6 +13,18 @@ interface HLRegistry {
   delete(name: string): void;
 }
 
+// DOM lib 尚无 Highlight/highlights 类型：收敛到这两个取数函数，
+// 调用方只判空使用，不再到处 as unknown as
+function highlightCtor(): (new (...r: Range[]) => object) | undefined {
+  // SAFETY: Highlight 是渐进增强 API，DOM lib 尚无其类型；返回值调用方已判空。
+  return (window as unknown as { Highlight?: new (...r: Range[]) => object }).Highlight;
+}
+
+function highlightRegistry(): HLRegistry | undefined {
+  // SAFETY: CSS.highlights 在部分浏览器不存在；返回值调用方已判空。
+  return (CSS as unknown as { highlights?: HLRegistry }).highlights;
+}
+
 // 跨文本节点找原文：拼全文搜下标，再映射回 node/offset，
 // 划线横跨 <strong>/<code> 等行内元素时也能定位
 function findRanges(root: HTMLElement, query: string): Range[] {
@@ -107,10 +119,8 @@ export default function ArticleNotes({ articleKey, articleRef }: Props) {
   // 不支持的浏览器静默降级，只剩下面的列表
   useEffect(() => {
     const root = articleRef.current;
-    // SAFETY: Highlight is progressive enhancement; H is checked for existence before use below.
-    const H = (window as unknown as { Highlight?: new (...r: Range[]) => object }).Highlight;
-    // SAFETY: CSS.highlights may not exist; reg is checked for existence before use below.
-    const reg = (CSS as unknown as { highlights?: HLRegistry }).highlights;
+    const H = highlightCtor();
+    const reg = highlightRegistry();
     if (!root || !H || !reg) {
       setStale({});
       return;
@@ -135,8 +145,7 @@ export default function ArticleNotes({ articleKey, articleRef }: Props) {
         // 卸载时注册表没了也无所谓
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [articleKey, v]);
+  }, [articleKey, articleRef, v]);
 
   const doSave = () => {
     if (!pending) return;

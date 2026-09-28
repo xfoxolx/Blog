@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, isValidElement, type ReactElement } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, isValidElement, type ReactElement } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -6,7 +6,6 @@ import { remarkAlert } from 'remark-github-blockquote-alert';
 import rehypeSlug from 'rehype-slug';
 import rehypeHighlight from 'rehype-highlight';
 import PageNav from '../components/PageNav';
-import Mermaid from '../components/Mermaid';
 import CodeBlock, { type HastLike } from '../components/CodeBlock';
 import { TocList, useToc } from '../components/Toc';
 import ArticleNotes from '../components/ArticleNotes';
@@ -15,6 +14,8 @@ import { themeClass, useTheme } from '../lib/theme';
 import { getPost, postPath, siblings, FOLDERS } from '../lib/posts';
 import { isRead, markRead, useProgress } from '../lib/progress';
 import { FOCUS_SIZES, FOCUS_WIDTHS, SERIF_STACK, loadFocus, saveFocus, type FocusPrefs } from '../lib/focus';
+
+const Mermaid = lazy(() => import('../components/Mermaid'));
 
 function isMermaid(el: unknown) {
   const props = (el as ReactElement)?.props as { className?: string; children?: unknown } | undefined;
@@ -80,7 +81,14 @@ export default function Post() {
       pre({ children, node }: { children?: React.ReactNode; node?: HastLike }) {
         const child = Array.isArray(children) ? children[0] : children;
         const code = isMermaid(child);
-        if (code !== null) return <Mermaid code={code} />;
+        if (code !== null)
+          return (
+            <Suspense
+              fallback={<div className="my-6 min-h-[180px] rounded-2xl border border-stroke bg-surface p-4" />}
+            >
+              <Mermaid code={code} />
+            </Suspense>
+          );
         const codeNode = node?.children?.find((c) => c.tagName === 'code');
         if (isValidElement(child)) return <CodeBlock codeEl={child} codeNode={codeNode} />;
         return <pre>{children}</pre>;
@@ -313,18 +321,18 @@ export default function Post() {
 
         <div ref={trackerRef} aria-hidden className="h-px" />
 
-        {!single && (
+        {!single && prev && next && (
         <nav
           className={focus ? 'grid sm:grid-cols-2 gap-4 mt-16 mx-auto w-full' : 'grid sm:grid-cols-2 gap-4 mt-16 max-w-[760px]'}
           style={focus ? { maxWidth: focusWidth } : undefined}
         >
-          <Link to={postPath(prev!)} className="rounded-2xl border border-stroke bg-surface p-5 hover:bg-stroke/30 transition-colors">
+          <Link to={postPath(prev)} className="rounded-2xl border border-stroke bg-surface p-5 hover:bg-stroke/30 transition-colors">
             <p className="text-[11px] text-muted uppercase tracking-[0.2em] mb-1">← {t('post.prev')}</p>
-            <p className="text-text-primary">{prev!.title}</p>
+            <p className="text-text-primary">{prev.title}</p>
           </Link>
-          <Link to={postPath(next!)} className="rounded-2xl border border-stroke bg-surface p-5 text-right hover:bg-stroke/30 transition-colors">
+          <Link to={postPath(next)} className="rounded-2xl border border-stroke bg-surface p-5 text-right hover:bg-stroke/30 transition-colors">
             <p className="text-[11px] text-muted uppercase tracking-[0.2em] mb-1">{t('post.next')} →</p>
-            <p className="text-text-primary">{next!.title}</p>
+            <p className="text-text-primary">{next.title}</p>
           </Link>
         </nav>
         )}

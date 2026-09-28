@@ -9,7 +9,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-ISC-blue.svg)](./package.json)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 写 Markdown 即发布 · 中英双语 · 暗色 / 浅色 · 命令终端 · 专注阅读 · 本地划线笔记
 
@@ -27,26 +27,23 @@
 | 📖 阅读 | 专注模式（字号 / 行宽 / 衬线可调）、目录高亮、已读进度、本地划线笔记（导出 / 导入） |
 | 🌍 国际化 | 中英一键切换，文案全在 `src/i18n/*.json` |
 | 🎨 视觉 | 液态玻璃导航、Hero 光标拖尾、HLS 视频背景、GitHub 热力图、年份进度彩蛋 |
-| 🚀 部署 | 纯静态，`gh-pages` 一键发布到 GitHub Pages |
+| 🚀 部署 | 纯静态，push 到 `main` 即由 GitHub Actions 自动发布到 GitHub Pages |
 
 ## 🚀 快速开始
+
+> 需要 Node >= 20。
 
 ```bash
 npm install
 npm run dev      # 本地预览 http://localhost:5173
 npm run build    # 类型检查 + 构建
-npm run deploy   # 构建并发布到 gh-pages
 ```
 
-> 发布到项目页（如 `username.github.io/repo/`）时带上 base：
->
-> ```bash
-> PAGES_BASE=/repo/ npm run deploy
-> ```
+> 推送到 `main` 即自动构建并发布到 GitHub Pages；项目页子路径（`PAGES_BASE`）已在 workflow 里自动推导，无需手动处理。
 
 ## 🧩 改成你的博客（4 步）
 
-1. **改配置**：`src/data.ts` 里 `site` 对象——名字、签名、邮箱、GitHub、头像、社交链接、Hero 标题/视频，留空即关闭对应模块。
+1. **改配置**（必改）：`src/data.ts` 里 `site` 对象——名字、签名、邮箱、GitHub、头像、社交链接、Hero 标题/视频，留空即关闭对应模块。
 2. **换头像**：替换 `public/avatar.jpg`（文件名在配置里可改）。
 3. **改文案**：`src/i18n/zh.json` / `en.json`。
 4. **写文章**：往 `content/` 里丢 `.md` 文件。

@@ -1,5 +1,4 @@
 import { useEffect, useId, useRef } from 'react';
-import mermaid from 'mermaid';
 import { useTheme } from '../lib/theme';
 
 export default function Mermaid({ code }: { code: string }) {
@@ -10,10 +9,13 @@ export default function Mermaid({ code }: { code: string }) {
   useEffect(() => {
     let alive = true;
     const box = boxRef.current;
-    mermaid.initialize({ startOnLoad: false, theme: theme === 'light' ? 'default' : 'dark' });
-    mermaid
-      .render(`mm-${rawId}`, code)
-      .then(({ svg }) => {
+    // ponytail: dynamic import keeps 3MB+ mermaid out of the main bundle
+    (async () => {
+      try {
+        const { default: mermaid } = await import('mermaid');
+        if (!alive || !box) return;
+        mermaid.initialize({ startOnLoad: false, theme: theme === 'light' ? 'default' : 'dark' });
+        const { svg } = await mermaid.render(`mm-${rawId}`, code);
         if (!alive || !box) return;
         // 白名单：只接受解析后根节点确为 <svg> 的输出
         const doc = new DOMParser().parseFromString(svg, 'image/svg+xml');
@@ -24,11 +26,11 @@ export default function Mermaid({ code }: { code: string }) {
         } else {
           box.textContent = '图表渲染失败';
         }
-      })
-      .catch(() => {
+      } catch {
         // textContent 自动转义，不拼接 HTML
         if (alive && box) box.textContent = '图表渲染失败';
-      });
+      }
+    })();
     return () => {
       alive = false;
     };

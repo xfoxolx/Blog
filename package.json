@@ -1,16 +1,25 @@
 {
   "name": "blog",
   "version": "1.0.0",
-  "description": "",
+  "description": "一个安静、现代、开箱即用的个人博客模板：Markdown 即发布，中英双语，纯静态部署。",
+  "author": "xfoxolx",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xfoxolx/Blog.git"
+  },
+  "homepage": "https://xfoxolx.github.io/Blog/",
+  "bugs": {
+    "url": "https://github.com/xfoxolx/Blog/issues"
+  },
   "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "framer-motion": "^13.4.4",
     "gsap": "^3.15.0",

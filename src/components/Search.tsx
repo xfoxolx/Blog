@@ -77,7 +77,6 @@ export default function SearchButton() {
           className="fixed inset-0 z-[70] flex items-start justify-center px-4 pt-24 md:pt-32"
           onClick={() => setOpen(false)}
         >
-          <div className="absolute inset-0 bg-bg/70 backdrop-blur-sm" />
           <div
             className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-stroke bg-surface shadow-2xl"
             onClick={(e) => e.stopPropagation()}

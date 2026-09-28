@@ -1,18 +1,19 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
 export type Theme = 'dark' | 'light';
 const Ctx = createContext<{ theme: Theme; toggle: () => void }>({ theme: 'dark', toggle: () => {} });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('theme') === 'light' ? 'light' : 'dark'));
-  const toggle = () => {
+  const toggle = useCallback(() => {
     setTheme((t) => {
       const next = t === 'dark' ? 'light' : 'dark';
       localStorage.setItem('theme', next);
       return next;
     });
-  };
-  return <Ctx.Provider value={{ theme, toggle }}>{children}</Ctx.Provider>;
+  }, []);
+  const value = useMemo(() => ({ theme, toggle }), [theme, toggle]);
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export const useTheme = () => useContext(Ctx);

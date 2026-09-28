@@ -52,8 +52,7 @@ export default function Terminal() {
     return () => {
       document.body.style.overflow = '';
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, t]);
 
   useEffect(() => {
     boxRef.current?.scrollTo({ top: boxRef.current.scrollHeight });
